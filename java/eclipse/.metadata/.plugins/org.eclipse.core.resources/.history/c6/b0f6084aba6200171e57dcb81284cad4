@@ -1,0 +1,11 @@
+package av1;
+
+import java.sql.Connection;
+
+public interface IPessaoDAO {
+	Connection getConnection();
+	void add(Pessoa pessoa); 
+	void update(Pessoa student);
+	void delete(int rollNo);
+	void findAll();
+}

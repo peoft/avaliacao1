@@ -1,0 +1,9 @@
+package av1;
+
+public interface IPessaoDAO {
+	Connection getConnection();
+	void add(Student student); 
+	void update(Student student);
+	void delete(int rollNo);
+	void findAll();
+}
