@@ -1,0 +1,8 @@
+package av1;
+
+import java.util.Date;
+
+public class Aluguel {
+	private Date dataPedido;
+
+}

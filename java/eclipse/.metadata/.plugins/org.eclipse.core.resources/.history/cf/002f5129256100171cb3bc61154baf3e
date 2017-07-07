@@ -1,0 +1,12 @@
+package av1;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class Aluguel {
+	private Date dataPedido;
+	private Date dataEntrega;
+	private Date dataDevolucao;
+	private BigDecimal valorTotal;
+
+}

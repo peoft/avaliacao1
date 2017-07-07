@@ -1,0 +1,6 @@
+package av1;
+
+public class Motorista extends Pessoa {
+	String numeroCNH;
+
+}

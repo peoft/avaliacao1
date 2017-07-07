@@ -1,0 +1,11 @@
+
+package av1;
+
+
+
+public class Pessoa {
+	String nome;
+	Date dataNascimento;
+	
+
+}

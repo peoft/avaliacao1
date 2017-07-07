@@ -1,0 +1,11 @@
+import java.lang.*;
+
+package av1;
+
+
+
+public class Pessoa {
+	String nome;
+	
+
+}

@@ -1,0 +1,10 @@
+
+package av1;
+
+import java.util.Date;
+
+public abstract class Pessoa {
+	private String nome;
+	private Date dataNascimento;
+	private String cpf;	
+}
