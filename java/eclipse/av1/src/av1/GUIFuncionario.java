@@ -89,27 +89,40 @@ public class GUIFuncionario {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PessoaDAO pessoaDAO = new PessoaDAO();
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-				Date date;
-				try {
-					SEXO sexo;
-					date = dateFormat.parse(dataNascimento.getText());
-					if (masculino.isSelected()) {
-						sexo = SEXO.Masculino;
-					} else {
-						sexo = SEXO.Feminino;
-					}
-					Pessoa pessoa = new Funcionario(0, nome.getText(), date, cpf.getText(), sexo, matricula.getText() );
-					if (pessoaDAO != null) {				
-						if (pessoaDAO.criar(pessoa) == true) {
-							cleanFields();
+				if (pessoaDAO != null) {
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+					Date date;
+					try {
+						SEXO sexo;
+						date = dateFormat.parse(dataNascimento.getText());
+						System.out.println("dataN =" + date.toString());
+						if (masculino.isSelected()) {
+							sexo = SEXO.Masculino;
+						} else {
+							sexo = SEXO.Feminino;
 						}
-					}					
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+						Funcionario funcionario = new Funcionario(0, nome.getText(), date, cpf.getText(), sexo, matricula.getText());
+						if (funcionario != null) {
+							Pessoa pessoa = (Pessoa) funcionario;
+							if (pessoaDAO.criar(pessoa) == true) {
+								if (pessoaDAO.recuperarPeloCPF(pessoa) == true) {
+									FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
+									if (funcionarioDAO != null) {
+										funcionario.setId(pessoa.getId());
+										if (funcionarioDAO.criar(funcionario) == true) {
+											cleanFields();
+										} else {
+											pessoaDAO.deletar(pessoa);
+										}
+									}																		
+								}								
+							}							
+						}
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}				
 			}
 		});
 		
@@ -121,8 +134,24 @@ public class GUIFuncionario {
 					if (funcionarioDAO != null) {
 						Funcionario funcionario = new Funcionario(0, null, null, null, null, matricula.getText());
 						if (funcionarioDAO.recuperar(funcionario) == true) {
+							PessoaDAO pessoaDAO = new PessoaDAO();
 							System.out.println("Funcionario encontrado!");
 							System.out.println("Id="+funcionario.getId());
+							if (pessoaDAO != null) {
+								Pessoa pessoa = funcionario;
+								if (pessoaDAO.recuperar(pessoa) == true) {
+									nome.setText(pessoa.getNome());
+									SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+									dataNascimento.setText(dateFormat.format(pessoa.getDataNascimento()));
+									if (pessoa.getSexo() == SEXO.Masculino) {
+										masculino.setSelected(true);
+									} else {
+										feminino.setSelected(true);										
+									}
+									cpf.setText(pessoa.getCpf());
+								}
+							}
+							
 						} else {
 							System.out.println("Funcionario nao encontrado!");
 						}
@@ -142,6 +171,30 @@ public class GUIFuncionario {
 		});
 		
 		JButton btnNewButton_3 = new JButton("Deletar");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
+				if (funcionarioDAO != null) {
+					try {						
+						Funcionario funcionario = new Funcionario(0, null, null, null, null, matricula.getText());
+						if (funcionario != null) {
+							if (funcionarioDAO.recuperar(funcionario) == true) {
+								PessoaDAO pessoaDAO = new PessoaDAO();
+								if (pessoaDAO != null) {
+									Pessoa pessoa = (Pessoa) funcionario;
+									if (pessoaDAO.deletar(pessoa) == true) {
+										cleanFields();
+									}									
+								}
+							}
+						}
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		
 		JLabel lblNome = new JLabel("Nome:");
 		

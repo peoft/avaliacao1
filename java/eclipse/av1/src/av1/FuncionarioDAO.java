@@ -5,9 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
+import java.sql.Savepoint;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+	
 public class FuncionarioDAO implements IFuncionarioDAO {
 
 	@Override
@@ -16,12 +17,13 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 		Connection conn = null;
         try {
             conn = ConnectionFactory.getInstance().getConnection("jdbc:mysql://localhost:3306/AV1","root","root");
+            conn.setAutoCommit(false);
         } catch (SQLException ex) {
             Logger.getLogger(PessoaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }        
         return conn;
 	}
-
+	
 	@Override
 	public boolean criar(Funcionario funcionario) {
 		boolean ret = false;
@@ -29,17 +31,27 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 		PreparedStatement ptmt = null;
 		// TODO Auto-generated method stub
 		try {			
-			String queryString = "INSERT INTO Funcionario(id, matricula) VALUES(?,?)";
+			String queryString = "INSERT INTO Funcionario(pessoa_id, matricula) VALUES(?,?)";
+			
 			connection = getConnection();
 			ptmt = connection.prepareStatement(queryString);
 			ptmt.setInt(1, funcionario.getId());
 			ptmt.setString(2, funcionario.getMatricula());
+			System.out.println("Funcionaio - id = " + funcionario.getId());
 			ptmt.executeUpdate();
-			System.out.println("Data Added Successfully");
+			connection.commit();
+			System.out.println("Registro inserido na tabela funcionario!");
 			ret = true;
 		} catch (SQLException e) {
 			System.out.println("Erro ao adicionar =" + e.getMessage());
-			e.printStackTrace();			
+			e.printStackTrace();
+			if (connection != null) {
+				try {
+					connection.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
 		} finally {
 			try {
 				if (ptmt != null)
@@ -47,7 +59,9 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 				if (connection != null)
 					connection.close();
 			} catch (SQLException e) {
+				e.printStackTrace();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		return ret;
@@ -57,7 +71,7 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 	public boolean recuperar(Funcionario funcionario) {		
 		// TODO Auto-generated method stub
 		boolean ret = false;
-		String queryString = "SELECT matricula FROM funcionario where matricula == ?";
+		String queryString = "SELECT pessoa_id FROM funcionario where matricula = ?";
 		try (
 			Connection connection = getConnection();
 			PreparedStatement ptmt = connection.prepareStatement(queryString);
@@ -66,13 +80,22 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 			try (ResultSet resultSet = ptmt.executeQuery()){			
 				while (resultSet.next()) {
 					System.out.println("Id" + resultSet.getInt("pessoa_id"));
-				}
-				ret = true;
-			} catch (SQLTimeoutException e) {				
-			} catch (SQLException e) {				
+					funcionario.setId(resultSet.getInt("pessoa_id"));
+					ret = true;
+				}				
+			} catch (SQLTimeoutException e) {
+				System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+				e.printStackTrace();
+			} catch (SQLException e) {
+				System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+				e.printStackTrace();				
 			}				
 		} catch (SQLException e) {
-		} catch (Exception e) {			
+			System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+			e.printStackTrace();			
+		} catch (Exception e) {
+			System.out.println("Erro ao recuperar dados funcionario = " + e.getMessage());
+			e.printStackTrace();			
 		}
 		return ret;
 	}

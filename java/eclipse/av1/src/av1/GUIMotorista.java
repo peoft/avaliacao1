@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.JRadioButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 public class GUIMotorista {
 
@@ -56,6 +57,7 @@ public class GUIMotorista {
 	 */
 	private void initialize() {
 		frmCadastroMotorista = new JFrame();
+		frmCadastroMotorista.setResizable(false);
 		frmCadastroMotorista.setTitle("Cadastro Motorista");
 		frmCadastroMotorista.setBounds(100, 100, 618, 188);
 		
@@ -181,5 +183,6 @@ public class GUIMotorista {
 		);
 		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3, btnAluguel});
 		frmCadastroMotorista.getContentPane().setLayout(groupLayout);
+		frmCadastroMotorista.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{label, textField, label_2, textField_1, label_3, textField_2, radioButton, radioButton_1, lblNmeroCnh, textField_3, btnAluguel, btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3, label_1, frmCadastroMotorista.getContentPane()}));
 	}
 }

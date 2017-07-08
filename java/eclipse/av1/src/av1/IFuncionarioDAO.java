@@ -7,5 +7,5 @@ public interface IFuncionarioDAO {
 	boolean criar(Funcionario funcionario); 
 	boolean recuperar(Funcionario funcionario);
 	boolean atualizar(Funcionario funcionario);
-	boolean deletar(Funcionario funcionario);
+	boolean deletar(Funcionario funcionario);	
 }
