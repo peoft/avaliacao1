@@ -4,8 +4,8 @@ import java.sql.Connection;
 
 public interface IFuncionarioDAO {
 	Connection getConnection();
-	void criar(Funcionario funcionario); 
-	void recuperar(Funcionario funcionario);
-	void atualizar(Funcionario funcionario);
-	void deletar(Funcionario funcionario);
+	boolean criar(Funcionario funcionario); 
+	boolean recuperar(Funcionario funcionario);
+	boolean atualizar(Funcionario funcionario);
+	boolean deletar(Funcionario funcionario);
 }

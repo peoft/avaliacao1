@@ -25,6 +25,7 @@ import javax.swing.SwingConstants;
 import java.awt.Component;
 import javax.swing.JTextArea;
 import javax.swing.JFormattedTextField;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 public class GUIFuncionario {
 
@@ -33,6 +34,9 @@ public class GUIFuncionario {
 	private JTextField dataNascimento;
 	private JTextField cpf;
 	private JTextField matricula;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	JRadioButton masculino = null;
+	JRadioButton feminino = null;
 
 	/**
 	 * Launch the application.
@@ -56,15 +60,30 @@ public class GUIFuncionario {
 	public GUIFuncionario() {
 		initialize();
 	}
+	
+	/**
+	 * Clean fields from GUI.
+	 */
+	
+	public void cleanFields() {
+		matricula.setText("");
+		nome.setText("");
+		dataNascimento.setText("");
+		masculino.setSelected(false);
+		feminino.setSelected(false);
+		cpf.setText("");
+	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		JRadioButton masculino = new JRadioButton("M");;
+		masculino = new JRadioButton("M");
+		buttonGroup.add(masculino);;
 		frmCadastroFuncionario = new JFrame();
+		frmCadastroFuncionario.setResizable(false);
 		frmCadastroFuncionario.setTitle("Cadastro Funcion\u00E1rio");
-		frmCadastroFuncionario.setBounds(100, 100, 592, 216);
+		frmCadastroFuncionario.setBounds(100, 100, 561, 216);
 		
 		JButton btnNewButton = new JButton("Criar");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -80,9 +99,11 @@ public class GUIFuncionario {
 					} else {
 						sexo = SEXO.Feminino;
 					}
-					Pessoa pessoa = new Funcionario(0, nome.getText(), date, cpf.getText(), sexo );
+					Pessoa pessoa = new Funcionario(0, nome.getText(), date, cpf.getText(), sexo, matricula.getText() );
 					if (pessoaDAO != null) {				
-						pessoaDAO.criar(pessoa);
+						if (pessoaDAO.criar(pessoa) == true) {
+							cleanFields();
+						}
 					}					
 				} catch (ParseException e1) {
 					// TODO Auto-generated catch block
@@ -94,7 +115,23 @@ public class GUIFuncionario {
 		
 		JButton btnNewButton_1 = new JButton("Recuperar");
 		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {				
+				try {
+					FuncionarioDAO funcionarioDAO = new FuncionarioDAO();					
+					if (funcionarioDAO != null) {
+						Funcionario funcionario = new Funcionario(0, null, null, null, null, matricula.getText());
+						if (funcionarioDAO.recuperar(funcionario) == true) {
+							System.out.println("Funcionario encontrado!");
+							System.out.println("Id="+funcionario.getId());
+						} else {
+							System.out.println("Funcionario nao encontrado!");
+						}
+					}					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		});
 		
@@ -124,99 +161,86 @@ public class GUIFuncionario {
 		cpf.setColumns(10);	
 		
 		
-		JRadioButton feminino = new JRadioButton("F");
+		feminino = new JRadioButton("F");
+		buttonGroup.add(feminino);
 		
 		JLabel lblMatrcula = new JLabel("Matr\u00EDcula:");
 		
 		matricula = new JTextField();
 		matricula.setColumns(10);
+		
+		GUITextComponentLimit.addTo(matricula, 15);
+		GUITextComponentLimit.addTo(nome, 50);
+		GUITextComponentLimit.addTo(dataNascimento, 10);
+		GUITextComponentLimit.addTo(cpf, 11);
+		
 		GroupLayout groupLayout = new GroupLayout(frmCadastroFuncionario.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblMatrcula)
+						.addComponent(matricula, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblSexo)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(nome, GroupLayout.PREFERRED_SIZE, 267, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-									.addComponent(lblNome, Alignment.LEADING)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-											.addGroup(groupLayout.createSequentialGroup()
-												.addComponent(lblSexo)
-												.addPreferredGap(ComponentPlacement.RELATED, 38, Short.MAX_VALUE))
-											.addGroup(groupLayout.createSequentialGroup()
-												.addComponent(masculino)
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(feminino)
-												.addGap(62)))
-										.addGap(1)
-										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-											.addGroup(groupLayout.createSequentialGroup()
-												.addComponent(lblMatrcula)
-												.addGap(39))
-											.addComponent(matricula, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)))))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(1)
-									.addComponent(lblDataNascimento)
-									.addGap(41)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(cpf, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-										.addComponent(lblNewLabel)))
-								.addComponent(dataNascimento, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE))
-							.addGap(17))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnNewButton)
+							.addComponent(masculino)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnNewButton_1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnNewButton_2)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnNewButton_3)
-							.addContainerGap())))
+							.addComponent(feminino)))
+					.addGap(12)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNome)
+						.addComponent(nome, GroupLayout.PREFERRED_SIZE, 267, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel)
+						.addComponent(cpf, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE))
+					.addGap(16)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblDataNascimento)
+						.addComponent(dataNascimento, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(16, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(178, Short.MAX_VALUE)
+					.addComponent(btnNewButton)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_1)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_2)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_3)
+					.addGap(27))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(28)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblNome)
-								.addComponent(lblDataNascimento))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(nome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(dataNascimento, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(cpf, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblSexo)
-						.addComponent(lblMatrcula))
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(5)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(masculino)
-								.addComponent(feminino)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(8)
-							.addComponent(matricula, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(lblMatrcula)
+						.addComponent(lblNome)
+						.addComponent(lblDataNascimento))
+					.addGap(6)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(matricula, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(nome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(dataNascimento, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblSexo)
+						.addComponent(lblNewLabel))
+					.addGap(5)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(masculino)
+						.addComponent(cpf, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(feminino))
 					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnNewButton_3)
-						.addComponent(btnNewButton_2)
+						.addComponent(btnNewButton)
 						.addComponent(btnNewButton_1)
-						.addComponent(btnNewButton))
-					.addGap(20))
+						.addComponent(btnNewButton_2)
+						.addComponent(btnNewButton_3))
+					.addGap(30))
 		);
 		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3});
 		frmCadastroFuncionario.getContentPane().setLayout(groupLayout);
+		frmCadastroFuncionario.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{frmCadastroFuncionario.getContentPane(), lblMatrcula, matricula, lblNome, nome, lblDataNascimento, dataNascimento, lblSexo, masculino, feminino, lblNewLabel, cpf, btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3}));
 	}
 }

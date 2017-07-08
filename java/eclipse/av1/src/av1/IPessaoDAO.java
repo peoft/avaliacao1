@@ -4,8 +4,8 @@ import java.sql.Connection;
 
 public interface IPessaoDAO {
 	Connection getConnection();
-	void criar(Pessoa pessoa); 
+	boolean criar(Pessoa pessoa); 
 	void recuperar(Pessoa pessoa);
-	void atualizar(Pessoa pessoa);
-	void deletar(Pessoa pessoa);
+	boolean atualizar(Pessoa pessoa);
+	boolean deletar(Pessoa pessoa);
 }

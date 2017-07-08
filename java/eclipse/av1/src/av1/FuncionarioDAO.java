@@ -2,12 +2,13 @@ package av1;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.SQLTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PessoaDAO implements IPessaoDAO {
+public class FuncionarioDAO implements IFuncionarioDAO {
 
 	@Override
 	public Connection getConnection() {
@@ -22,20 +23,17 @@ public class PessoaDAO implements IPessaoDAO {
 	}
 
 	@Override
-	public boolean criar(Pessoa pessoa) {
+	public boolean criar(Funcionario funcionario) {
 		boolean ret = false;
 		Connection connection = null;
 		PreparedStatement ptmt = null;
 		// TODO Auto-generated method stub
 		try {			
-			String queryString = "INSERT INTO Pessoa(id, nome, dataNascimento, cpf, sexo) VALUES(?,?,?,?,?)";
+			String queryString = "INSERT INTO Funcionario(id, matricula) VALUES(?,?)";
 			connection = getConnection();
 			ptmt = connection.prepareStatement(queryString);
-			ptmt.setInt(1, pessoa.getId());
-			ptmt.setString(2, pessoa.getNome());
-			ptmt.setDate(3,  new java.sql.Date(pessoa.getDataNascimento().getTime()));
-			ptmt.setString(4, pessoa.getCpf());
-			ptmt.setString(5, pessoa.getSexo().toString());
+			ptmt.setInt(1, funcionario.getId());
+			ptmt.setString(2, funcionario.getMatricula());
 			ptmt.executeUpdate();
 			System.out.println("Data Added Successfully");
 			ret = true;
@@ -56,38 +54,31 @@ public class PessoaDAO implements IPessaoDAO {
 	}
 
 	@Override
-	public void recuperar(Pessoa pessoa) {
+	public boolean recuperar(Funcionario funcionario) {		
 		// TODO Auto-generated method stub
-/*		try {
-			String queryString = "SELECT * FROM student";
-			connection = getConnection();
-			ptmt = connection.prepareStatement(queryString);
-			resultSet = ptmt.executeQuery();
-			while (resultSet.next()) {
-				System.out.println("Roll No " + resultSet.getInt("RollNo")
-						+ ", Name " + resultSet.getString("Name") + ", Course "
-						+ resultSet.getString("Course") + ", Address "
-						+ resultSet.getString("Address"));
-			}
+		boolean ret = false;
+		String queryString = "SELECT matricula FROM funcionario where matricula == ?";
+		try (
+			Connection connection = getConnection();
+			PreparedStatement ptmt = connection.prepareStatement(queryString);
+			) {
+			ptmt.setString(1, funcionario.getMatricula());
+			try (ResultSet resultSet = ptmt.executeQuery()){			
+				while (resultSet.next()) {
+					System.out.println("Id" + resultSet.getInt("pessoa_id"));
+				}
+				ret = true;
+			} catch (SQLTimeoutException e) {				
+			} catch (SQLException e) {				
+			}				
 		} catch (SQLException e) {
-		} finally {
-			try {
-				if (resultSet != null)
-					resultSet.close();
-				if (ptmt != null)
-					ptmt.close();
-				if (connection != null)
-					connection.close();
-			} catch (SQLException e) {
-			} catch (Exception e) {
-			}
-
-		}*/
-		
+		} catch (Exception e) {			
+		}
+		return ret;
 	}
 
 	@Override
-	public boolean atualizar(Pessoa pessoa) {
+	public boolean atualizar(Funcionario funcionario) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -116,7 +107,7 @@ public class PessoaDAO implements IPessaoDAO {
 	}
 
 	@Override
-	public boolean deletar(Pessoa pessoa) {
+	public boolean deletar(Funcionario funcionario) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -144,8 +135,8 @@ public class PessoaDAO implements IPessaoDAO {
 	}
 	public static void main(String[] args) {
 		Connection connection;
-		PessoaDAO p = new PessoaDAO();
-		connection = p.getConnection();
+		FuncionarioDAO f = new FuncionarioDAO();
+		connection = f.getConnection();
 		if (connection != null) {
 			System.out.print("Conectou!!!");
 		}

@@ -3,8 +3,9 @@ package av1;
 import java.util.Date;
 
 public class Funcionario extends Pessoa {	
-	public Funcionario(int id, String nome, Date dataNascimento, String cpf, SEXO sexo) {
+	public Funcionario(int id, String nome, Date dataNascimento, String cpf, SEXO sexo, String matricula) {
 		super(id, nome, dataNascimento, cpf, sexo);
+		this.matricula = matricula;
 		// TODO Auto-generated constructor stub
 	}
 
