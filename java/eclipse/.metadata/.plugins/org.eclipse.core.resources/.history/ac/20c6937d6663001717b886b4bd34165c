@@ -1,0 +1,75 @@
+package av1;
+
+import java.util.Date;
+
+public class Funcionario extends Pessoa {	
+	private String matricula;
+
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+
+	@Override
+	SEXO getSexo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setSexo(SEXO sexo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	String getNome() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setNome(String nome) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	Date getDataNascimento() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setDataNascimento(Date dataNascimento) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	String getCpf() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setCpf(String cpf) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	void setId(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+}

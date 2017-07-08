@@ -10,6 +10,12 @@ public class Aluguel {
 	private Date dataDevolucao;
 	private BigDecimal valorTotal;
 	
+	public Aluguel(Calendar dataPedido, Date dataEntrega, Date dataDevolucao, BigDecimal valorTotal) {
+		this.dataPedido = dataPedido;
+		this.dataEntrega = dataEntrega;
+		this.dataDevolucao = dataDevolucao;
+		this.valorTotal = valorTotal;
+	}
 	public Calendar getDataPedido() {
 		return dataPedido;
 	}

@@ -1,0 +1,24 @@
+
+package av1;
+
+import java.util.Date;
+
+enum SEXO { Masculino, Feminino };
+
+public abstract class Pessoa {
+	private int id;
+	private String nome;
+	private Date dataNascimento;
+	private String cpf;
+	private SEXO sexo;
+	abstract SEXO getSexo();
+	abstract void setSexo(SEXO sexo);
+	abstract String getNome();
+	abstract void setNome(String nome);
+	abstract Date getDataNascimento();
+	abstract void setDataNascimento(Date dataNascimento);
+	abstract String getCpf();
+	abstract void setCpf(String cpf);
+	public int getId();
+	public void setId(int id);
+}

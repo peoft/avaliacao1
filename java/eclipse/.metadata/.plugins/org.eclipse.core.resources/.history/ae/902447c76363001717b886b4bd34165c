@@ -1,0 +1,75 @@
+package av1;
+
+import java.util.Date;
+
+public class Motorista extends Pessoa {
+	private String numeroCNH;
+
+	public String getNumeroCNH() {
+		return numeroCNH;
+	}
+
+	public void setNumeroCNH(String numeroCNH) {
+		this.numeroCNH = numeroCNH;
+	}
+
+	@Override
+	SEXO getSexo() {
+		// TODO Auto-generated method stub
+		return sexo;
+	}
+
+	@Override
+	void setSexo(SEXO sexo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	String getNome() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setNome(String nome) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	Date getDataNascimento() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setDataNascimento(Date dataNascimento) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	String getCpf() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setCpf(String cpf) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	void setId(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+}
