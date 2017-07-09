@@ -29,6 +29,10 @@ public class PessoaDAO implements IPessaoDAO {
 		boolean ret = false;
 		Connection connection = null;
 		// TODO Auto-generated method stub
+		if (pessoa.getSexo() == null) {
+			System.out.println("Sexo não selecionado!");
+			return ret;
+		}
 		try {
 			connection = getConnection();
 			String queryString = "INSERT INTO Pessoa(id, nome, dataNascimento, cpf, sexo) VALUES(?,?,?,?,?)";
@@ -111,28 +115,44 @@ public class PessoaDAO implements IPessaoDAO {
 	public boolean atualizar(Pessoa pessoa) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
-/*		try {
-			String queryString = "UPDATE student SET Name=? WHERE RollNo=?";
+		Connection connection = null;
+		// TODO Auto-generated method stub
+		try {
 			connection = getConnection();
-			ptmt = connection.prepareStatement(queryString);
-			ptmt.setString(1, student.getName());
-			ptmt.setInt(2, student.getRollNo());
-			ptmt.executeUpdate();
-			System.out.println("Table Updated Successfully");
+			String queryString = "UPDATE Pessoa SET nome=?, dataNascimento=?, cpf=?, sexo=? WHERE id=?";
+			try (PreparedStatement ptmt = connection.prepareStatement(queryString)) {				
+				ptmt.setString(1, pessoa.getNome());
+				ptmt.setDate(2, new java.sql.Date(pessoa.getDataNascimento().getTime()));
+				ptmt.setString(3, pessoa.getCpf());
+				ptmt.setString(4, pessoa.getSexo().toString());
+				ptmt.setInt(5, pessoa.getId());
+				ptmt.executeUpdate();
+			}
+			connection.commit();
+			System.out.println("Registro da tabela atualizado!");
+			ret = true;
 		} catch (SQLException e) {
+			System.out.println("Erro ao atualizar =" + e.getMessage());
+			e.printStackTrace();
+			if (connection != null)
+				try {
+					connection.rollback();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		} finally {
-			try {
-				if (ptmt != null)
-					ptmt.close();
-				if (connection != null)
+			if (connection != null) {
+				try {
 					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-
-			catch (SQLException e) {
-			} catch (Exception e) {
-			}
-		}*/
+		}
 		return ret;
+
 		
 	}
 

@@ -4,15 +4,11 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
-import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.event.ActionEvent;
-import java.awt.Dimension;
-import java.awt.Button;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -20,11 +16,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
 import javax.swing.SwingConstants;
 import java.awt.Component;
-import javax.swing.JTextArea;
-import javax.swing.JFormattedTextField;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 public class GUIFuncionario {
@@ -68,9 +61,8 @@ public class GUIFuncionario {
 	public void cleanFields() {
 		matricula.setText("");
 		nome.setText("");
-		dataNascimento.setText("");
-		masculino.setSelected(false);
-		feminino.setSelected(false);
+		dataNascimento.setText("");		
+		buttonGroup.clearSelection();
 		cpf.setText("");
 	}
 
@@ -93,15 +85,14 @@ public class GUIFuncionario {
 					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 					Date date;
 					try {
-						SEXO sexo;
+						SEXO sexo = null;
 						date = dateFormat.parse(dataNascimento.getText());
-						System.out.println("dataN =" + date.toString());
 						if (masculino.isSelected()) {
 							sexo = SEXO.Masculino;
-						} else {
+						} else if (feminino.isSelected()) {
 							sexo = SEXO.Feminino;
 						}
-						Funcionario funcionario = new Funcionario(0, nome.getText(), date, cpf.getText(), sexo, matricula.getText());
+						Funcionario funcionario = new Funcionario(0, nome.getText().length() > 0 ? nome.getText() : null, date, cpf.getText().length() > 0 ? cpf.getText() : null, sexo, matricula.getText().length() > 0 ? matricula.getText() : null);						
 						if (funcionario != null) {
 							Pessoa pessoa = (Pessoa) funcionario;
 							if (pessoaDAO.criar(pessoa) == true) {
@@ -167,6 +158,34 @@ public class GUIFuncionario {
 		JButton btnNewButton_2 = new JButton("Atualizar");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
+				if (funcionarioDAO != null) {
+					try {					
+						SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+						Date date;
+						SEXO sexo;
+						date = dateFormat.parse(dataNascimento.getText());
+						if (masculino.isSelected()) {
+							sexo = SEXO.Masculino;
+						} else {
+							sexo = SEXO.Feminino;
+						}
+						Funcionario funcionario = new Funcionario(0, nome.getText().length() > 0 ? nome.getText() : null, date, cpf.getText().length() > 0 ? cpf.getText() : null, sexo, matricula.getText().length() > 0 ? matricula.getText() : null);
+						if (funcionario != null) {
+							if (funcionarioDAO.recuperar(funcionario) == true) {
+								PessoaDAO pessoaDAO = new PessoaDAO();
+								if (pessoaDAO != null) {
+									Pessoa pessoa = (Pessoa) funcionario;
+									pessoaDAO.atualizar(pessoa);
+								}
+							}
+						}
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
 			}
 		});
 		
