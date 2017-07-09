@@ -313,6 +313,6 @@ public class GUIFuncionario {
 		);
 		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3});
 		frmCadastroFuncionario.getContentPane().setLayout(groupLayout);
-		frmCadastroFuncionario.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{frmCadastroFuncionario.getContentPane(), lblMatrcula, matricula, lblNome, nome, lblDataNascimento, dataNascimento, lblSexo, masculino, feminino, lblNewLabel, cpf, btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3}));
+		frmCadastroFuncionario.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{matricula, nome, dataNascimento, masculino, feminino, cpf, btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3}));
 	}
 }

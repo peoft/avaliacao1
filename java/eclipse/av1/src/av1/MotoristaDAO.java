@@ -8,7 +8,7 @@ import java.sql.SQLTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 	
-public class FuncionarioDAO implements IFuncionarioDAO {
+public class MotoristaDAO implements IMotoristaDAO {
 
 	@Override
 	public Connection getConnection() {
@@ -24,22 +24,22 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 	}
 	
 	@Override
-	public boolean criar(Funcionario funcionario) {
+	public boolean criar(Motorista motorista) {
 		boolean ret = false;
 		Connection connection = null;
 		PreparedStatement ptmt = null;
 		// TODO Auto-generated method stub
 		try {			
-			String queryString = "INSERT INTO Funcionario(pessoa_id, matricula) VALUES(?,?)";
+			String queryString = "INSERT INTO Motorista(pessoa_id, numeroCNH) VALUES(?,?)";
 			
 			connection = getConnection();
 			ptmt = connection.prepareStatement(queryString);
-			ptmt.setInt(1, funcionario.getId());
-			ptmt.setString(2, funcionario.getMatricula());
-			System.out.println("Funcionaio - id = " + funcionario.getId());
+			ptmt.setInt(1, motorista.getId());
+			ptmt.setString(2, motorista.getNumeroCNH());
+			System.out.println("Motorista - id = " + motorista.getId());
 			ptmt.executeUpdate();
 			connection.commit();
-			System.out.println("Registro inserido na tabela funcionario!");
+			System.out.println("Registro inserido na tabela motorista!");
 			ret = true;
 		} catch (SQLException e) {
 			System.out.println("Erro ao adicionar =" + e.getMessage());
@@ -68,40 +68,40 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 	}
 
 	@Override
-	public boolean recuperar(Funcionario funcionario) {		
+	public boolean recuperar(Motorista motorista) {		
 		// TODO Auto-generated method stub
 		boolean ret = false;
-		String queryString = "SELECT pessoa_id FROM funcionario where matricula = ?";
+		String queryString = "SELECT pessoa_id FROM motorista where numeroCNH = ?";
 		try (
 			Connection connection = getConnection();
 			PreparedStatement ptmt = connection.prepareStatement(queryString);
 			) {
-			ptmt.setString(1, funcionario.getMatricula());
+			ptmt.setString(1, motorista.getNumeroCNH());
 			try (ResultSet resultSet = ptmt.executeQuery()){			
 				while (resultSet.next()) {
 					System.out.println("Id" + resultSet.getInt("pessoa_id"));
-					funcionario.setId(resultSet.getInt("pessoa_id"));
+					motorista.setId(resultSet.getInt("pessoa_id"));
 					ret = true;
 				}				
 			} catch (SQLTimeoutException e) {
-				System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
 				e.printStackTrace();
 			} catch (SQLException e) {
-				System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
 				e.printStackTrace();				
 			}				
 		} catch (SQLException e) {
-			System.out.println("Erro ao recuperar dados do funcionario = " + e.getMessage());
+			System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
 			e.printStackTrace();			
 		} catch (Exception e) {
-			System.out.println("Erro ao recuperar dados funcionario = " + e.getMessage());
+			System.out.println("Erro ao recuperar dados motorista = " + e.getMessage());
 			e.printStackTrace();			
 		}
 		return ret;
 	}
 
 	@Override
-	public boolean atualizar(Funcionario funcionario) {
+	public boolean atualizar(Motorista motorista) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -130,7 +130,7 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 	}
 
 	@Override
-	public boolean deletar(Funcionario funcionario) {
+	public boolean deletar(Motorista motorista) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -158,10 +158,11 @@ public class FuncionarioDAO implements IFuncionarioDAO {
 	}
 	public static void main(String[] args) {
 		Connection connection;
-		FuncionarioDAO f = new FuncionarioDAO();
+		MotoristaDAO f = new MotoristaDAO();
 		connection = f.getConnection();
 		if (connection != null) {
 			System.out.print("Conectou!!!");
 		}
 	}
+
 }

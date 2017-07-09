@@ -3,8 +3,9 @@ package av1;
 import java.util.Date;
 
 public class Motorista extends Pessoa {
-	public Motorista(int id, String nome, Date dataNascimento, String cpf, SEXO sexo) {
+	public Motorista(int id, String nome, Date dataNascimento, String cpf, SEXO sexo, String numeroCNH) {
 		super(id, nome, dataNascimento, cpf, sexo);
+		this.numeroCNH = numeroCNH;
 		// TODO Auto-generated constructor stub
 	}
 
