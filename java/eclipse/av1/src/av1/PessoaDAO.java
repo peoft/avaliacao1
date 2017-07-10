@@ -109,6 +109,38 @@ public class PessoaDAO implements IPessaoDAO {
 		}
 		return ret;		
 	}
+	
+	public boolean recuperarPeloNome(Pessoa pessoa) {		
+		// TODO Auto-generated method stub
+		boolean ret = false;
+		String queryString = "SELECT id FROM pessoa where nome = ?";
+		try (
+			Connection connection = getConnection();
+			PreparedStatement ptmt = connection.prepareStatement(queryString);
+			) {
+			ptmt.setString(1, pessoa.getNome());
+			try (ResultSet resultSet = ptmt.executeQuery()){			
+				while (resultSet.next()) {
+					System.out.println("Id" + resultSet.getInt("id"));
+					pessoa.setId(resultSet.getInt("id"));
+					ret = true;
+				}				
+			} catch (SQLTimeoutException e) {
+				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+				e.printStackTrace();
+			} catch (SQLException e) {
+				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+				e.printStackTrace();				
+			}				
+		} catch (SQLException e) {
+			System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+			e.printStackTrace();			
+		} catch (Exception e) {
+			System.out.println("Erro ao recuperar dados motorista = " + e.getMessage());
+			e.printStackTrace();			
+		}
+		return ret;
+	}
 
 	@Override
 	public boolean atualizar(Pessoa pessoa) {

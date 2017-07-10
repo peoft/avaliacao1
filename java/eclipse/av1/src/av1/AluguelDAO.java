@@ -5,11 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 	
-public class MotoristaDAO implements IMotoristaDAO {
+public class AluguelDAO implements IAluguelDAO {
 
 	@Override
 	public Connection getConnection() {
@@ -19,28 +18,30 @@ public class MotoristaDAO implements IMotoristaDAO {
             conn = ConnectionFactory.getInstance().getConnection("jdbc:mysql://localhost:3306/AV1","root","root");
             conn.setAutoCommit(false);
         } catch (SQLException ex) {
-            Logger.getLogger(PessoaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AluguelDAO.class.getName()).log(Level.SEVERE, null, ex);
         }        
         return conn;
 	}
 	
 	@Override
-	public boolean criar(Motorista motorista) {
+	public boolean criar(Aluguel aluguel) {
 		boolean ret = false;
 		Connection connection = null;
 		PreparedStatement ptmt = null;
 		// TODO Auto-generated method stub
 		try {			
-			String queryString = "INSERT INTO Motorista(pessoa_id, numeroCNH) VALUES(?,?)";
+			String queryString = "INSERT INTO Aluguel(pessoa_id, dataPedido, dataEntrega, dataDevolucao, valorTotal) VALUES(?,?,?,?,?)";
 			
 			connection = getConnection();
 			ptmt = connection.prepareStatement(queryString);
-			ptmt.setInt(1, motorista.getId());
-			ptmt.setString(2, motorista.getNumeroCNH());
-			System.out.println("Motorista - id = " + motorista.getId());
+			ptmt.setInt(1, aluguel.getId());
+			ptmt.setDate(2, new java.sql.Date(aluguel.getDataPedido().getTime()));
+			ptmt.setDate(3, new java.sql.Date(aluguel.getDataEntrega().getTime()));
+			ptmt.setDate(4, new java.sql.Date(aluguel.getDataDevolucao().getTime()));
+			ptmt.setBigDecimal(5,aluguel.getValorTotal());			
 			ptmt.executeUpdate();
 			connection.commit();
-			System.out.println("Registro inserido na tabela motorista!");
+			System.out.println("Registro inserido na tabela aluguel!");
 			ret = true;
 		} catch (SQLException e) {
 			System.out.println("Erro ao adicionar =" + e.getMessage());
@@ -69,77 +70,43 @@ public class MotoristaDAO implements IMotoristaDAO {
 	}
 
 	@Override
-	public boolean recuperar(Motorista motorista) {		
+	public boolean recuperar(Aluguel aluguel) {		
 		// TODO Auto-generated method stub
 		boolean ret = false;
-		String queryString = "SELECT pessoa_id FROM motorista where numeroCNH = ?";
+		String queryString = "SELECT pessoa_id, dataPedido, dataEntrega, dataDevolucao, valorTotal FROM funcionario where id = ?,?,?,?,?";
 		try (
 			Connection connection = getConnection();
 			PreparedStatement ptmt = connection.prepareStatement(queryString);
 			) {
-			ptmt.setString(1, motorista.getNumeroCNH());
+			ptmt.setInt(1, aluguel.getId());
 			try (ResultSet resultSet = ptmt.executeQuery()){			
 				while (resultSet.next()) {
-					System.out.println("Id" + resultSet.getInt("pessoa_id"));
-					motorista.setId(resultSet.getInt("pessoa_id"));
+					aluguel.setId(resultSet.getInt("pessoa_id"));
+					aluguel.setDataPedido(new java.util.Date(resultSet.getDate("dataPedido").getTime()));
+					aluguel.setDataEntrega(new java.util.Date(resultSet.getDate("dataEntrega").getTime()));
+					aluguel.setDataDevolucao(new java.util.Date(resultSet.getDate("dataDevolucao").getTime()));
+					aluguel.setValorTotal(resultSet.getBigDecimal("valorTotal"));
 					ret = true;
 				}				
 			} catch (SQLTimeoutException e) {
-				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+				System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
 				e.printStackTrace();
 			} catch (SQLException e) {
-				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+				System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
 				e.printStackTrace();				
 			}				
 		} catch (SQLException e) {
-			System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
+			System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
 			e.printStackTrace();			
 		} catch (Exception e) {
-			System.out.println("Erro ao recuperar dados motorista = " + e.getMessage());
+			System.out.println("Erro ao recuperar dados aluguel = " + e.getMessage());
 			e.printStackTrace();			
 		}
 		return ret;
-	}		
-	
-	public ArrayList<Motorista> recuperarTodos() {		
-		// TODO Auto-generated method stub
-	String queryString = "SELECT pessoa_id FROM motorista";
-		ArrayList<Motorista> todos = null;
-		try (
-			Connection connection = getConnection();
-			PreparedStatement ptmt = connection.prepareStatement(queryString);
-			) {
-			try (ResultSet resultSet = ptmt.executeQuery()){
-				resultSet.last();
-				if (resultSet.getRow()> 0) {
-					todos = new ArrayList<Motorista> ();
-					resultSet.beforeFirst();					
-				}
-				while (resultSet.next()) {
-					Motorista motorista = new Motorista(resultSet.getInt("pessoa_id"), null, null, null, null, null);
-					System.out.println("Id" + resultSet.getInt("pessoa_id"));
-					todos.add(motorista);					
-				}				
-			} catch (SQLTimeoutException e) {
-				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
-				e.printStackTrace();
-			} catch (SQLException e) {
-				System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
-				e.printStackTrace();				
-			}				
-		} catch (SQLException e) {
-			System.out.println("Erro ao recuperar dados do motorista = " + e.getMessage());
-			e.printStackTrace();			
-		} catch (Exception e) {
-			System.out.println("Erro ao recuperar dados motorista = " + e.getMessage());
-			e.printStackTrace();			
-		}
-		return todos;
 	}
 
-
 	@Override
-	public boolean atualizar(Motorista motorista) {
+	public boolean atualizar(Aluguel aluguel) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -168,7 +135,7 @@ public class MotoristaDAO implements IMotoristaDAO {
 	}
 
 	@Override
-	public boolean deletar(Motorista motorista) {
+	public boolean deletar(Aluguel aluguel) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 /*		try {
@@ -196,11 +163,10 @@ public class MotoristaDAO implements IMotoristaDAO {
 	}
 	public static void main(String[] args) {
 		Connection connection;
-		MotoristaDAO f = new MotoristaDAO();
+		AluguelDAO f = new AluguelDAO();
 		connection = f.getConnection();
 		if (connection != null) {
 			System.out.print("Conectou!!!");
 		}
 	}
-
 }

@@ -219,7 +219,7 @@ public class GUIFuncionario {
 		
 		JLabel lblDataNascimento = new JLabel("Data Nascimento:");
 		
-		JLabel lblNewLabel = new JLabel("CPF:");
+		JLabel lblCPF = new JLabel("CPF:");
 		
 		JLabel lblSexo = new JLabel("Sexo:");
 		
@@ -263,7 +263,7 @@ public class GUIFuncionario {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNome)
 						.addComponent(nome, GroupLayout.PREFERRED_SIZE, 267, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel)
+						.addComponent(lblCPF)
 						.addComponent(cpf, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE))
 					.addGap(16)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
@@ -291,13 +291,13 @@ public class GUIFuncionario {
 						.addComponent(lblDataNascimento))
 					.addGap(6)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(matricula, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(matricula)
 						.addComponent(nome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(dataNascimento, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblSexo)
-						.addComponent(lblNewLabel))
+						.addComponent(lblCPF))
 					.addGap(5)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(masculino)
