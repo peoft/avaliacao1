@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 	
@@ -35,7 +36,7 @@ public class AluguelDAO implements IAluguelDAO {
 			connection = getConnection();
 			ptmt = connection.prepareStatement(queryString);
 			ptmt.setInt(1, aluguel.getId());
-			ptmt.setDate(2, new java.sql.Date(aluguel.getDataPedido().getTime()));
+			ptmt.setDate(2, new java.sql.Date(aluguel.getDataPedido().getTimeInMillis()));
 			ptmt.setDate(3, new java.sql.Date(aluguel.getDataEntrega().getTime()));
 			ptmt.setDate(4, new java.sql.Date(aluguel.getDataDevolucao().getTime()));
 			ptmt.setBigDecimal(5,aluguel.getValorTotal());			
@@ -82,7 +83,10 @@ public class AluguelDAO implements IAluguelDAO {
 			try (ResultSet resultSet = ptmt.executeQuery()){			
 				while (resultSet.next()) {
 					aluguel.setId(resultSet.getInt("pessoa_id"));
-					aluguel.setDataPedido(new java.util.Date(resultSet.getDate("dataPedido").getTime()));
+					Calendar dataPedido;
+					dataPedido = Calendar.getInstance();
+					dataPedido.setTime(resultSet.getDate("dataPedido"));
+					aluguel.setDataPedido(dataPedido);
 					aluguel.setDataEntrega(new java.util.Date(resultSet.getDate("dataEntrega").getTime()));
 					aluguel.setDataDevolucao(new java.util.Date(resultSet.getDate("dataDevolucao").getTime()));
 					aluguel.setValorTotal(resultSet.getBigDecimal("valorTotal"));

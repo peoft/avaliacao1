@@ -2,6 +2,7 @@ package av1;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JFrame;
@@ -17,17 +18,16 @@ import javax.swing.SwingConstants;
 import java.awt.Component;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import java.awt.Cursor;
-import javax.swing.UIManager;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 public class GUIAluguel {
 
@@ -37,8 +37,9 @@ public class GUIAluguel {
 	private JTextField dataEntrega;
 	private JTextField dataDevolucao;
 	private JTextField valorTotal;
-	JList<String> motoristas;
 	DefaultListModel<String> model;
+	private JTable alugueis;
+	private String motoristaSelectionado;
 
 	/**
 	 * Launch the application.
@@ -47,7 +48,7 @@ public class GUIAluguel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GUIAluguel window = new GUIAluguel();					
+					GUIAluguel window = new GUIAluguel();
 					window.frmCadastroAluguel.setVisible(true);					
 					
 				} catch (Exception e) {
@@ -97,7 +98,6 @@ public class GUIAluguel {
 		dataEntrega.setText("");
 		dataPedido.setText("");
 		valorTotal.setText("");
-		motoristas.setSelectedIndex(0);
 	}
 
 
@@ -108,23 +108,24 @@ public class GUIAluguel {
 		frmCadastroAluguel = new JFrame();
 		frmCadastroAluguel.setResizable(false);
 		frmCadastroAluguel.setTitle("Cadastro Aluguel");
-		frmCadastroAluguel.setBounds(100, 100, 551, 214);
-		JPanel panel;
+		frmCadastroAluguel.setBounds(100, 100, 507, 352);
+		JList<String> motoristas = new JList<String>(model);
 		
-		JLabel lblMotorista = new JLabel("Motorista:");
+		JLabel lblMotorista = new JLabel("Selecione o Motorista:");
 		
 		JButton criar = new JButton("Criar");
 		criar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String nome = motoristas.getSelectedValue();
+				String nome = motoristas.getSelectedValue().toString();
 				PessoaDAO pessoaDAO = new PessoaDAO();
 				if (pessoaDAO != null) {
 					Pessoa motorista = new Motorista(0, nome, null, null, null, null);
 					if (pessoaDAO.recuperarPeloNome(motorista) == true) {
 						SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-						Date dtPedido, dtEntrega, dtDeVolucao;
+						Date dtEntrega, dtDeVolucao;
+						Calendar dtPedido = Calendar.getInstance();
 						try {
-							dtPedido = dateFormat.parse(dataPedido.getText());
+							dtPedido.setTime(dateFormat.parse(dataPedido.getText()));
 							dtEntrega = dateFormat.parse(dataEntrega.getText());
 							dtDeVolucao = dateFormat.parse(dataDevolucao.getText());
 							BigDecimal vlTotal = new BigDecimal(valorTotal.getText());
@@ -142,14 +143,6 @@ public class GUIAluguel {
 					}
 				}				
 				
-			}
-		});
-		
-		
-		JButton recuperar = new JButton("Recuperar");
-		recuperar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// TO DO.
 			}
 		});
 		
@@ -187,101 +180,142 @@ public class GUIAluguel {
 		valorTotal = new JTextField();
 		valorTotal.setColumns(10);
 		
-		motoristas = new JList<String>(model);
-		motoristas.setIgnoreRepaint(true);
-		motoristas.setMinimumSize(new Dimension(6, 20));
-		motoristas.setPreferredSize(new Dimension(6, 20));
-		motoristas.setBorder(UIManager.getBorder("TextField.border"));
-		motoristas.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-		motoristas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		motoristas.setSelectedIndex(0);
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.getViewport().setView(motoristas);
-		panel = new JPanel();
-		panel.add(scrollPane);
-	
-		frmCadastroAluguel.setContentPane(panel);
 		
 		GUITextComponentLimit.addTo(dataPedido, 10);
 		GUITextComponentLimit.addTo(dataDevolucao, 10);
 		GUITextComponentLimit.addTo(dataEntrega, 10);
 		GUITextComponentLimit.addTo(valorTotal, 12);
 		
+		JScrollPane scrollMotoristas = new JScrollPane();
+		scrollMotoristas.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollMotoristas.setAutoscrolls(true);
+		
+		JLabel lblAluguis = new JLabel("Alugu\u00E9is:");
+		
+		JScrollPane scrollAlugueis = new JScrollPane();
+		scrollAlugueis.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		GroupLayout groupLayout = new GroupLayout(frmCadastroAluguel.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(31)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(motoristas, GroupLayout.PREFERRED_SIZE, 493, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblMotorista))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(25)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(dataPedido, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-									.addGap(18)
-									.addComponent(dataEntrega, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(lblMotorista)
-										.addGap(163))
-									.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 										.addComponent(lblDataPedido)
-										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(lblDataEntrega)
-										.addGap(18))))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblDataDevolucao)
-								.addComponent(dataDevolucao, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(dataPedido, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE))
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addGap(16)
+											.addComponent(lblDataEntrega))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addGap(18)
+											.addComponent(dataEntrega, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblDataDevolucao)
+										.addComponent(dataDevolucao, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
+									.addGap(17)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(valorTotal, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblValorTotal, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)))
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(20)
-									.addComponent(lblValorTotal))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(18)
-									.addComponent(valorTotal, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+									.addGap(72)
+									.addComponent(criar)
+									.addGap(29)
+									.addComponent(atualizar)
+									.addGap(28)
+									.addComponent(deletar))))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(49)
-							.addComponent(criar)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(recuperar)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(atualizar)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(deletar)))
-					.addGap(171))
+							.addContainerGap()
+							.addComponent(lblAluguis))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollMotoristas, Alignment.LEADING)
+								.addComponent(scrollAlugueis, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 459, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap(32, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblMotorista)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(motoristas, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblDataPedido)
-						.addComponent(lblDataEntrega)
-						.addComponent(lblDataDevolucao)
-						.addComponent(lblValorTotal))
+					.addComponent(scrollMotoristas, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(dataPedido, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(dataEntrega, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(dataDevolucao, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(valorTotal, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addComponent(lblAluguis)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollAlugueis, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(21)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(lblDataEntrega, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(lblDataDevolucao))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(dataPedido, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(dataEntrega, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(dataDevolucao, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+								.addComponent(lblDataPedido)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblValorTotal)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(valorTotal, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(recuperar)
+						.addComponent(deletar)
 						.addComponent(criar)
-						.addComponent(atualizar)
-						.addComponent(deletar))
-					.addGap(17))
+						.addComponent(atualizar))
+					.addGap(28))
 		);
-		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {criar, recuperar, atualizar, deletar});
+		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {dataPedido, dataEntrega, dataDevolucao, valorTotal});
+		groupLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {criar, atualizar, deletar});
+		
+		motoristas.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent arg0) {
+				if (!arg0.getValueIsAdjusting()){
+		            JList<String> source = (JList<String>) arg0.getSource();
+		            motoristaSelectionado = source.getSelectedValue().toString();
+		            System.out.println("Selecionado=" + motoristaSelectionado);
+		        }
+			}
+		});
+		
+		motoristas.setSelectedIndex(0);
+		
+		
+		 String[] columnNames = {"ID",
+                 "Data Pedido",
+                 "Data Entrega",
+                 "Data Devolucao",
+                 "Valor Total"};
+		 
+		 Object[][] data = {
+			        {"5", "16/12/2016", "16/12/2016", "16/12/2016", "1000.05"},
+			        {"5", "16/01/2017", "23/01/2017", "22/01/2017", "3050.00"}
+			        };
+		 
+					 		 
+		alugueis = new JTable(data, columnNames);
+		scrollAlugueis.setViewportView(alugueis);
+		
+		
+		scrollMotoristas.setViewportView(motoristas);
 		frmCadastroAluguel.getContentPane().setLayout(groupLayout);
-		frmCadastroAluguel.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{motoristas, dataPedido, dataEntrega, dataDevolucao, valorTotal, criar, recuperar, atualizar, deletar}));
-		frmCadastroAluguel.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{motoristas, dataPedido, dataEntrega, dataDevolucao, valorTotal, criar, recuperar, atualizar, deletar}));
+		frmCadastroAluguel.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{dataPedido, dataEntrega, dataDevolucao, valorTotal, criar, atualizar, deletar}));
+		frmCadastroAluguel.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{motoristas, dataPedido, dataEntrega, dataDevolucao, valorTotal, criar, atualizar, deletar}));
 	}
 }
