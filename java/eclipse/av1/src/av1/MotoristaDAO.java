@@ -99,7 +99,7 @@ public class MotoristaDAO implements IMotoristaDAO {
 			e.printStackTrace();			
 		}
 		return ret;
-	}		
+	}
 	
 	public ArrayList<Motorista> recuperarTodos() {		
 		// TODO Auto-generated method stub

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,10 +72,10 @@ public class AluguelDAO implements IAluguelDAO {
 	}
 
 	@Override
-	public boolean recuperar(Aluguel aluguel) {		
+	public boolean recuperar(Aluguel aluguel) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
-		String queryString = "SELECT pessoa_id, dataPedido, dataEntrega, dataDevolucao, valorTotal FROM funcionario where id = ?,?,?,?,?";
+		String queryString = "SELECT pessoa_id, dataPedido, dataEntrega, dataDevolucao, valorTotal FROM aluguel where id = ?";
 		try (
 			Connection connection = getConnection();
 			PreparedStatement ptmt = connection.prepareStatement(queryString);
@@ -109,6 +110,49 @@ public class AluguelDAO implements IAluguelDAO {
 		return ret;
 	}
 
+	
+	public ArrayList<Aluguel> recuperarAlugueis(Pessoa pessoa) {
+		// TODO Auto-generated method stub
+		ArrayList<Aluguel> alugueis = null;
+		String queryString = "SELECT id, dataPedido, dataEntrega, dataDevolucao, valorTotal FROM aluguel where pessoa_id = ?";
+		try (
+			Connection connection = getConnection();
+			PreparedStatement ptmt = connection.prepareStatement(queryString);
+			) {
+			ptmt.setInt(1, pessoa.getId());
+			try (ResultSet resultSet = ptmt.executeQuery()){
+				resultSet.last();
+				if (resultSet.getRow()> 0) {
+					alugueis = new ArrayList<Aluguel> ();
+					resultSet.beforeFirst();					
+				}
+
+				while (resultSet.next()) {
+					Aluguel aluguel = new Aluguel(resultSet.getInt("id"), null, new java.util.Date(resultSet.getDate("dataEntrega").getTime()),
+							new java.util.Date(resultSet.getDate("dataDevolucao").getTime()), resultSet.getBigDecimal("valorTotal"));
+					Calendar dataPedido;
+					dataPedido = Calendar.getInstance();
+					dataPedido.setTime(resultSet.getDate("dataPedido"));
+					aluguel.setDataPedido(dataPedido);
+					alugueis.add(aluguel);
+				}				
+			} catch (SQLTimeoutException e) {
+				System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
+				e.printStackTrace();
+			} catch (SQLException e) {
+				System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
+				e.printStackTrace();				
+			}				
+		} catch (SQLException e) {
+			System.out.println("Erro ao recuperar dados do aluguel = " + e.getMessage());
+			e.printStackTrace();			
+		} catch (Exception e) {
+			System.out.println("Erro ao recuperar dados aluguel = " + e.getMessage());
+			e.printStackTrace();			
+		}
+		return alugueis;
+	}
+	
 	@Override
 	public boolean atualizar(Aluguel aluguel) {
 		// TODO Auto-generated method stub
