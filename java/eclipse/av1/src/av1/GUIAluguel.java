@@ -11,6 +11,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -28,7 +29,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.event.ListSelectionEvent;
 
 public class GUIAluguel {
@@ -42,7 +42,11 @@ public class GUIAluguel {
 	DefaultListModel<String> model;
 	private JTable alugueis;
 	private String motoristaSelecionado;
-	JScrollPane scrollAlugueis;
+	private JScrollPane scrollAlugueis;
+	private ListSelectionModel listSelectionModel;
+	private Object[][] aluguelSelecionado;
+	enum aluguelColumnHeader { ID, DataPedido, DataEntrega, DataDevolucao, ValorTotal };
+	
 
 	/**
 	 * Launch the application.
@@ -95,7 +99,7 @@ public class GUIAluguel {
 
 	public void atualizaAlugueis(String nomeMotorista) {
 		try {
-			String[] columnNames = { "ID", "Data Pedido", "Data Entrega", "Data Devolucao", "Valor Total" };
+			String[] columnNames = { aluguelColumnHeader.ID.toString(), aluguelColumnHeader.DataPedido.toString(), aluguelColumnHeader.DataEntrega.toString(), aluguelColumnHeader.DataDevolucao.toString(), aluguelColumnHeader.ValorTotal.toString() };
 	
 			PessoaDAO pessoaDAO = new PessoaDAO();
 			Motorista motorista = new Motorista(0, nomeMotorista, null, null, null, null);
@@ -124,7 +128,10 @@ public class GUIAluguel {
 			
 					DefaultTableModel model = new DefaultTableModel(data, columnNames);
 					alugueis = new JTable(model);
-					//alugueis = new JTable(data, columnNames);
+					listSelectionModel = alugueis.getSelectionModel();
+			        listSelectionModel.addListSelectionListener(new SharedListSelectionHandler());
+			        alugueis.setSelectionModel(listSelectionModel);
+					alugueis.setSelectionMode(ListSelectionModel.SINGLE_SELECTION );
 					scrollAlugueis.setViewportView(alugueis);
 				}
 			}
@@ -132,6 +139,39 @@ public class GUIAluguel {
 			e.printStackTrace();
 		}
 	}
+	
+	class SharedListSelectionHandler implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) { 
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+ 
+//            int firstIndex = e.getFirstIndex();
+//            int lastIndex = e.getLastIndex();
+            boolean isAdjusting = e.getValueIsAdjusting(); 
+ 
+            if (!isAdjusting) {
+                if (!lsm.isSelectionEmpty()) {
+                    // Find out which indexes are selected.
+                    int minIndex = lsm.getMinSelectionIndex();
+                    int maxIndex = lsm.getMaxSelectionIndex();
+                    for (int i = minIndex; i <= maxIndex; i++) {
+                        if (lsm.isSelectedIndex(i)) {
+                        	Object data = alugueis.getValueAt(i, aluguelColumnHeader.ID.ordinal());
+                        	System.out.println("ID=" + data);
+                        	data = alugueis.getValueAt(i, aluguelColumnHeader.DataDevolucao.ordinal());
+                        	System.out.println("Devolucao=" + data);
+                        	data = alugueis.getValueAt(i, aluguelColumnHeader.DataEntrega.ordinal());
+                        	System.out.println("Entrega=" + data);
+                        	data = alugueis.getValueAt(i, aluguelColumnHeader.DataPedido.ordinal());
+                        	System.out.println("Pedido=" + data);
+                        	data = alugueis.getValueAt(i, aluguelColumnHeader.ValorTotal.ordinal());
+                        	System.out.println("Valor Total=" + data);
+                        	
+                        }
+                    }
+                }            	
+            }
+        }
+    }
 
 	/**
 	 * Clean fields from GUI.
