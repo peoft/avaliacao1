@@ -184,19 +184,16 @@ public class AluguelDAO implements IAluguelDAO {
 						e1.printStackTrace();
 					}
 				}
-			} catch (Exception e) {
-				System.out.println("Erro ao atualizar os dados do aluguel = " + e.getMessage());
-				e.printStackTrace();
-				if (connection != null) {
-					try {
-						connection.rollback();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						System.out.println("Erro ao realizar rollback = " + e1.getMessage());
-						e1.printStackTrace();
-					}
+			} finally { 
+				try { 
+					if (connection != null) {
+						connection.close();						
+					}											 
+				} 
+				catch (SQLException e) {
+					System.out.println("Erro ao fechar conexao = " + e.getMessage());
+					e.printStackTrace();
 				}
-				
 			}
 		}
 		return ret;
@@ -207,17 +204,42 @@ public class AluguelDAO implements IAluguelDAO {
 	public boolean deletar(Aluguel aluguel) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
-		/*
-		 * try { String queryString = "DELETE FROM student WHERE RollNo=?"; connection =
-		 * getConnection(); ptmt = connection.prepareStatement(queryString);
-		 * ptmt.setInt(1, rollNo); ptmt.executeUpdate();
-		 * System.out.println("Data deleted Successfully"); } catch (SQLException e) { }
-		 * finally { try { if (ptmt != null) ptmt.close(); if (connection != null)
-		 * connection.close(); } catch (SQLException e) { } catch (Exception e) { }
-		 * 
-		 * }
-		 * 
-		 */
+		Connection connection = null;		
+		connection = getConnection();
+		if (connection != null ) {
+			String queryString = "DELETE FROM aluguel WHERE id=?";
+			try (
+					PreparedStatement ptmt = connection.prepareStatement(queryString);
+			) {
+				ptmt.setInt(1, aluguel.getId()); 
+				ptmt.executeUpdate();
+				connection.commit();
+				System.out.println("Registro removido com sucesso!");
+				ret = true;
+			} catch (SQLException e) {
+				try {
+					if (connection != null) {
+						connection.rollback();
+					}
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					System.out.println("Erro ao realizar rollback = " + e1.getMessage());
+					e1.printStackTrace();
+				}
+			} finally { 
+				try { 
+					if (connection != null) {
+						connection.close();						
+					}											 
+				} 
+				catch (SQLException e) {
+					System.out.println("Erro ao fechar conexao = " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
+		}
 		return ret;
 	}
 
