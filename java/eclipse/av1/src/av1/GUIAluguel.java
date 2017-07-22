@@ -44,7 +44,7 @@ public class GUIAluguel {
 	private String motoristaSelecionado;
 	private JScrollPane scrollAlugueis;
 	private ListSelectionModel listSelectionModel;
-	private Object[][] aluguelSelecionado;
+	private int idAluguelSelecionado = 0;
 	enum aluguelColumnHeader { ID, DataPedido, DataEntrega, DataDevolucao, ValorTotal };
 	
 
@@ -144,8 +144,6 @@ public class GUIAluguel {
         public void valueChanged(ListSelectionEvent e) { 
             ListSelectionModel lsm = (ListSelectionModel)e.getSource();
  
-//            int firstIndex = e.getFirstIndex();
-//            int lastIndex = e.getLastIndex();
             boolean isAdjusting = e.getValueIsAdjusting(); 
  
             if (!isAdjusting) {
@@ -155,17 +153,18 @@ public class GUIAluguel {
                     int maxIndex = lsm.getMaxSelectionIndex();
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
+                        	// Atualizar campos de texto
                         	Object data = alugueis.getValueAt(i, aluguelColumnHeader.ID.ordinal());
-                        	System.out.println("ID=" + data);
+                        	idAluguelSelecionado = Integer.valueOf(data.toString());
+                        	System.out.println("ID = " + idAluguelSelecionado);
                         	data = alugueis.getValueAt(i, aluguelColumnHeader.DataDevolucao.ordinal());
-                        	System.out.println("Devolucao=" + data);
+                        	dataDevolucao.setText(data.toString());
                         	data = alugueis.getValueAt(i, aluguelColumnHeader.DataEntrega.ordinal());
-                        	System.out.println("Entrega=" + data);
+                        	dataEntrega.setText(data.toString());
                         	data = alugueis.getValueAt(i, aluguelColumnHeader.DataPedido.ordinal());
-                        	System.out.println("Pedido=" + data);
+                        	dataPedido.setText(data.toString());
                         	data = alugueis.getValueAt(i, aluguelColumnHeader.ValorTotal.ordinal());
-                        	System.out.println("Valor Total=" + data);
-                        	
+                        	valorTotal.setText(data.toString());
                         }
                     }
                 }            	
@@ -181,6 +180,7 @@ public class GUIAluguel {
 		dataEntrega.setText("");
 		dataPedido.setText("");
 		valorTotal.setText("");
+		idAluguelSelecionado = 0;
 	}
 
 	/**
@@ -216,6 +216,7 @@ public class GUIAluguel {
 								AluguelDAO aluguelDAO = new AluguelDAO();
 								if (aluguelDAO.criar(aluguel) == true) {
 									cleanFields();
+									atualizaAlugueis(motoristaSelecionado);
 								}
 							}
 						} catch (ParseException e1) {
@@ -231,7 +232,27 @@ public class GUIAluguel {
 		JButton atualizar = new JButton("Atualizar");
 		atualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TO DO.
+				if (idAluguelSelecionado != 0) {
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+					Date dtEntrega, dtDeVolucao;
+					Calendar dtPedido = Calendar.getInstance();
+					try {
+						dtPedido.setTime(dateFormat.parse(dataPedido.getText()));
+						dtEntrega = dateFormat.parse(dataEntrega.getText());
+						dtDeVolucao = dateFormat.parse(dataDevolucao.getText());
+						BigDecimal vlTotal = new BigDecimal(valorTotal.getText());
+						Aluguel aluguel = new Aluguel(idAluguelSelecionado, dtPedido, dtEntrega, dtDeVolucao, vlTotal);
+						if (aluguel != null) {
+							AluguelDAO aluguelDAO = new AluguelDAO();
+							if (aluguelDAO.atualizar(aluguel) == true) {
+								atualizaAlugueis(motoristaSelecionado);								
+							}
+						}
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 			}
 		});
 
